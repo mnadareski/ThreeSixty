@@ -9,13 +9,13 @@ namespace ThreeSixty
 	{
 		static void Main(string[] args)
 		{
-			bool force = false;
+			bool force = true; // We assume that there are corrupt sectors by default
 			List<string> files = new List<string>();
 			foreach (string arg in args)
 			{
-				if (arg == "-f" || arg == "--force")
+				if (arg == "-nf" || arg == "--no-force")
 				{
-					force = true;
+					force = false;
 				}
 				else if (File.Exists(arg))
 				{
@@ -46,7 +46,7 @@ namespace ThreeSixty
 
 			// Check that the file size matches an 80-track image
 			FileInfo fi = new FileInfo(path);
-			if (fi.Length != ThreeFiveDDDS9T.Capacity && !force)
+			if (fi.Length != ThreeFiveDDDS9S.Capacity && !force)
 			{
 				Console.WriteLine("File '{0}' was not a valid 80-track file size: {1} {2}", path, ThreeFiveDDDS.Capacity, fi.Length);
 				return;
@@ -55,15 +55,15 @@ namespace ThreeSixty
 			// Get format-specific pieces
 			string extension;
 			int trackSize;
-			if (fi.Length == ThreeFiveDDDS.Capacity)
+			if (fi.Length == ThreeFiveDDDS9S.Capacity)
 			{
-				extension = "." + FiveTwoFiveDDDS.Capacity.ToString();
-				trackSize = FiveTwoFiveDDDS.TrackSize;
+				extension = "." + FiveTwoFiveDDDS9S.Capacity.ToString();
+				trackSize = FiveTwoFiveDDDS9S.TrackSize * 2;
 			}
 			else if (force)
 			{
 				extension = ".forced";
-				trackSize = FiveTwoFiveDDDS.TrackSize;
+				trackSize = FiveTwoFiveDDDS9S.TrackSize * 2;
 			}
 			else
 			{
