@@ -55,19 +55,22 @@ namespace ThreeSixty
 			// Get format-specific pieces
 			string extension;
 			int trackSize;
+			int tracks;
 			if (fi.Length == ThreeFiveDDDS9S.Capacity)
 			{
-				extension = "." + FiveTwoFiveDDDS9S.Capacity.ToString();
+				extension = "." + FiveTwoFiveDDDS9S.Capacity;
 				trackSize = FiveTwoFiveDDDS9S.TrackSize * 2;
+				tracks = FiveTwoFiveDDDS9S.TracksPerSide * FiveTwoFiveDDDS9S.Sides;
 			}
-			else if (force)
+			else if (fi.Length == FiveTwoFiveDDDS.Capacity)
 			{
-				extension = ".forced";
-				trackSize = FiveTwoFiveDDDS9S.TrackSize * 2;
+				extension = "." + FiveTwoFiveDDSS.Capacity;
+				trackSize = FiveTwoFiveDDSS.TrackSize;
+				tracks = FiveTwoFiveDDSS.TracksPerSide * FiveTwoFiveDDSS.Sides;
 			}
 			else
 			{
-				Console.WriteLine("File '{0}' was not a valid 80-track file size");
+				Console.WriteLine("File '{0}' was not a recognized file size");
 				return;
 			}
 
@@ -83,7 +86,7 @@ namespace ThreeSixty
 
 				if (buffer.Any(b => b != 0x00) && !force)
 				{
-					Console.WriteLine("File '{0}' was a valid 80-track image", path);
+					Console.WriteLine("File '{0}' was already a valid image", path);
 					return;
 				}
 			}
@@ -105,7 +108,7 @@ namespace ThreeSixty
 				}
 			}
 
-			Console.WriteLine("File '{0}' was converted to a 40-track image", path);
+			Console.WriteLine("File '{0}' was converted to a {1}-track image", path, tracks);
 		}
 	}
 }
