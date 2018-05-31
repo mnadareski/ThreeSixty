@@ -9,10 +9,15 @@ namespace ThreeSixty
 	{
 		static void Main(string[] args)
 		{
+			bool force = false;
 			List<string> files = new List<string>();
 			foreach (string arg in args)
 			{
-				if (File.Exists(arg))
+				if (arg == "-f" || arg == "--force")
+				{
+					force = true;
+				}
+				else if (File.Exists(arg))
 				{
 					files.Add(arg);
 				}
@@ -24,13 +29,13 @@ namespace ThreeSixty
 
 			foreach (string file in files)
 			{
-				Convert(file);
+				Convert(file, force);
 			}
 
 			Console.ReadLine();
 		}
 
-		private static void Convert(string path)
+		private static void Convert(string path, bool force)
 		{
 			// Ensure the file exists
 			if (!File.Exists(path))
@@ -41,7 +46,7 @@ namespace ThreeSixty
 
 			// Check that the file size matches an 80-track image
 			FileInfo fi = new FileInfo(path);
-			if (fi.Length != ThreeFiveDDDS.Capacity)
+			if (fi.Length != ThreeFiveDDDS.Capacity && !force)
 			{
 				Console.WriteLine("File '{0}' was not a valid 80-track file size", path);
 				return;
@@ -52,7 +57,12 @@ namespace ThreeSixty
 			int trackSize;
 			if (fi.Length == ThreeFiveDDDS.Capacity)
 			{
-				extension = FiveTwoFiveDDDS.Capacity.ToString();
+				extension = "." + FiveTwoFiveDDDS.Capacity.ToString();
+				trackSize = FiveTwoFiveDDDS.TrackSize;
+			}
+			else if (force)
+			{
+				extension = ".forced";
 				trackSize = FiveTwoFiveDDDS.TrackSize;
 			}
 			else
@@ -71,7 +81,7 @@ namespace ThreeSixty
 				br.ReadBytes(trackSize);
 				byte[] buffer = br.ReadBytes(trackSize);
 
-				if (buffer.Any(b => b != 0x00))
+				if (buffer.Any(b => b != 0x00) && !force)
 				{
 					Console.WriteLine("File '{0}' was a valid 80-track image", path);
 					return;
