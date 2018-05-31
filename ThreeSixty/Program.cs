@@ -48,7 +48,7 @@ namespace ThreeSixty
 			FileInfo fi = new FileInfo(path);
 			if (fi.Length != ThreeFiveDDDS.Capacity && !force)
 			{
-				Console.WriteLine("File '{0}' was not a valid 80-track file size", path);
+				Console.WriteLine("File '{0}' was not a valid 80-track file size: {1} {2}", path, ThreeFiveDDDS.Capacity, fi.Length);
 				return;
 			}
 
