@@ -152,7 +152,22 @@ namespace ThreeSixty
 		public static PhysicalSize PhysicalSize = PhysicalSize.ThreeFiveInch;
 		public static Density Density = Density.Double;
 		public static int BytesPerSector = 512;
-		public static int SectorsPerTrack = 8; // Variant: 9
+		public static int SectorsPerTrack = 8;
+		public static int TracksPerSide = 80;
+		public static int Sides = 1;
+		public static int RPM = 300;
+		public static DiskEncoding Encoding = DiskEncoding.MFM;
+
+		public static int TrackSize => BytesPerSector * SectorsPerTrack;
+		public static int Capacity => BytesPerSector * SectorsPerTrack * TracksPerSide * Sides;
+	}
+
+	public class ThreeFiveDDSS9T
+	{
+		public static PhysicalSize PhysicalSize = PhysicalSize.ThreeFiveInch;
+		public static Density Density = Density.Double;
+		public static int BytesPerSector = 512;
+		public static int SectorsPerTrack = 9;
 		public static int TracksPerSide = 80;
 		public static int Sides = 1;
 		public static int RPM = 300;
@@ -167,7 +182,22 @@ namespace ThreeSixty
 		public static PhysicalSize PhysicalSize = PhysicalSize.ThreeFiveInch;
 		public static Density Density = Density.Double;
 		public static int BytesPerSector = 512;
-		public static int SectorsPerTrack = 8; // Variant: 9
+		public static int SectorsPerTrack = 8;
+		public static int TracksPerSide = 80;
+		public static int Sides = 2;
+		public static int RPM = 300;
+		public static DiskEncoding Encoding = DiskEncoding.MFM;
+
+		public static int TrackSize => BytesPerSector * SectorsPerTrack;
+		public static int Capacity => BytesPerSector * SectorsPerTrack * TracksPerSide * Sides;
+	}
+
+	public class ThreeFiveDDDS9T
+	{
+		public static PhysicalSize PhysicalSize = PhysicalSize.ThreeFiveInch;
+		public static Density Density = Density.Double;
+		public static int BytesPerSector = 512;
+		public static int SectorsPerTrack = 9;
 		public static int TracksPerSide = 80;
 		public static int Sides = 2;
 		public static int RPM = 300;
