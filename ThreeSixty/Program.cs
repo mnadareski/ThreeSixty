@@ -46,7 +46,9 @@ namespace ThreeSixty
 
 			// Check that the file size matches an 80-track image
 			FileInfo fi = new FileInfo(path);
-			if (fi.Length != ThreeFiveDDDS9S.Capacity && !force)
+			if (fi.Length != ThreeFiveDDDS9S.Capacity
+				&& fi.Length != FiveTwoFiveDDDS.Capacity
+				&& !force)
 			{
 				Console.WriteLine("File '{0}' was not a valid 80-track file size: {1} {2}", path, ThreeFiveDDDS.Capacity, fi.Length);
 				return;
