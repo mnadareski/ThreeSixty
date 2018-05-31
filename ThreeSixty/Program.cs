@@ -44,24 +44,27 @@ namespace ThreeSixty
 				return;
 			}
 
-			// Get the output path
-			path = Path.GetFullPath(path);
-			string newpath = path;
-			int sectorSize = 0;
+			// Get format-specific pieces
+			string extension;
+			int sectorSize;
 			switch (fi.Length)
 			{
 				case _fiveTwoFiveEightyTrackFileSize:
-					newpath += _fiveTwoFiveExtension;
+					extension = _fiveTwoFiveExtension;
 					sectorSize = _fiveTwoFiveSectorSize;
 					break;
 				case _threeFiveEightyTrackFileSize:
-					newpath += _threeFiveExtension;
+					extension = _threeFiveExtension;
 					sectorSize = _threeFiveSectorSize;
 					break;
 				default:
 					Console.WriteLine("File '{0}' was not a valid 80-track file size");
 					return;
 			}
+
+			// Get the output path
+			path = Path.GetFullPath(path);
+			string newpath = path + extension;
 
 			// Check to see if the image is truely the incorrect size (second sector should be null)
 			using (BinaryReader br = new BinaryReader(File.OpenRead(path)))
