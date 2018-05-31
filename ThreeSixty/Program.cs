@@ -102,12 +102,13 @@ namespace ThreeSixty
 			path = Path.GetFullPath(path);
 			string newpath = path + extension;
 
-			// Check to see if the image is truely the incorrect size (second sector should be null)
+			// Check to see if the image is truely the incorrect size (second track should be null)
 			using (BinaryReader br = new BinaryReader(File.OpenRead(path)))
 			{
 				br.ReadBytes(trackSize);
 				byte[] buffer = br.ReadBytes(trackSize);
 
+				// TODO: Improve detection of corrupt, supposed-to-be-blank tracks
 				if (buffer.Any(b => b != 0x00) && !force)
 				{
 					Console.WriteLine("File '{0}' was already a valid image", path);
