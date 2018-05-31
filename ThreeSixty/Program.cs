@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -8,9 +9,22 @@ namespace ThreeSixty
 	{
 		static void Main(string[] args)
 		{
+			List<string> files = new List<string>();
 			foreach (string arg in args)
 			{
-				Convert(arg);
+				if (File.Exists(arg))
+				{
+					files.Add(arg);
+				}
+				else if (Directory.Exists(arg))
+				{
+					files.AddRange(Directory.EnumerateFiles(arg, "*", SearchOption.AllDirectories));
+				}
+			}
+
+			foreach (string file in files)
+			{
+				Convert(file);
 			}
 
 			Console.ReadLine();
