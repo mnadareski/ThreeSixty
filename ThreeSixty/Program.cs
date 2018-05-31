@@ -9,11 +9,11 @@ namespace ThreeSixty
 	{
 		static void Main(string[] args)
 		{
-			bool force = true; // We assume that there are corrupt sectors by default
+			bool force = false;
 			List<string> files = new List<string>();
 			foreach (string arg in args)
 			{
-				if (arg == "-nf" || arg == "--no-force")
+				if (arg == "-f" || arg == "--force")
 				{
 					force = false;
 				}
@@ -44,35 +44,57 @@ namespace ThreeSixty
 				return;
 			}
 
-			// Check that the file size matches an 80-track image
-			FileInfo fi = new FileInfo(path);
-			if (fi.Length != ThreeFiveDDDS9S.Capacity
-				&& fi.Length != FiveTwoFiveDDDS.Capacity
-				&& !force)
-			{
-				Console.WriteLine("File '{0}' was not a valid 80-track file size: {1} {2}", path, ThreeFiveDDDS.Capacity, fi.Length);
-				return;
-			}
-
 			// Get format-specific pieces
+			long filesize = new FileInfo(path).Length;
 			string extension;
 			int trackSize;
 			int tracks;
-			if (fi.Length == ThreeFiveDDDS9S.Capacity)
+
+			if (filesize == EightSDDS.Capacity)
 			{
-				extension = "." + FiveTwoFiveDDDS9S.Capacity;
-				trackSize = FiveTwoFiveDDDS9S.TrackSize * 2;
-				tracks = FiveTwoFiveDDDS9S.TracksPerSide * FiveTwoFiveDDDS9S.Sides;
+				extension = "." + EightSDSS.Capacity;
+				trackSize = EightSDDS.TrackSize;
+				tracks = EightSDSS.TracksPerSide * EightSDSS.Sides;
 			}
-			else if (fi.Length == FiveTwoFiveDDDS.Capacity)
+			else if (filesize == EightDDDS.Capacity)
+			{
+				extension = "." + EightDDSS.Capacity;
+				trackSize = EightDDDS.TrackSize;
+				tracks = EightDDSS.TracksPerSide * EightDDSS.Sides;
+			}
+			else if (filesize == FiveTwoFiveDDDS.Capacity)
 			{
 				extension = "." + FiveTwoFiveDDSS.Capacity;
-				trackSize = FiveTwoFiveDDSS.TrackSize;
+				trackSize = FiveTwoFiveDDDS.TrackSize;
 				tracks = FiveTwoFiveDDSS.TracksPerSide * FiveTwoFiveDDSS.Sides;
+			}
+			else if (filesize == FiveTwoFiveDDDS9S.Capacity)
+			{
+				extension = "." + FiveTwoFiveDDSS9S.Capacity;
+				trackSize = FiveTwoFiveDDDS9S.TrackSize;
+				tracks = FiveTwoFiveDDSS9S.TracksPerSide * FiveTwoFiveDDSS9S.Sides;
+			}
+			else if (filesize == FiveTwoFiveQDDS.Capacity)
+			{
+				extension = "." + FiveTwoFiveQDSS.Capacity;
+				trackSize = FiveTwoFiveQDDS.TrackSize;
+				tracks = FiveTwoFiveQDSS.TracksPerSide * FiveTwoFiveQDSS.Sides;
+			}
+			else if (filesize == ThreeFiveDDDS.Capacity)
+			{
+				extension = "." + FiveTwoFiveDDDS.Capacity;
+				trackSize = ThreeFiveDDDS.TrackSize;
+				tracks = FiveTwoFiveDDDS.TracksPerSide * FiveTwoFiveDDDS.Sides;
+			}
+			else if (filesize == ThreeFiveDDDS9S.Capacity)
+			{
+				extension = "." + FiveTwoFiveDDDS9S.Capacity;
+				trackSize = ThreeFiveDDDS9S.TrackSize;
+				tracks = FiveTwoFiveDDDS9S.TracksPerSide * FiveTwoFiveDDDS9S.Sides;
 			}
 			else
 			{
-				Console.WriteLine("File '{0}' was not a recognized file size");
+				Console.WriteLine("File '{0}' was not a recognized file size: {1}", path, filesize);
 				return;
 			}
 
