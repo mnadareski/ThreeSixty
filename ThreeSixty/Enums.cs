@@ -2,20 +2,24 @@
 {
 	public enum PhysicalSize
 	{
-		NONE = 0,
-		EightInch = 1,
-		FiveTwoFiveInch = 2,
-		ThreeFiveInch = 3,
+		NONE,
+		EightInch,
+		FiveTwoFiveInch,
+		ThreeFiveInch,
+        ThreeInch,
+        TwoFiveInch,
+        TwoInch,
 	}
 
 	public enum Density
 	{
-		NONE = 0,
-		Single = 1,
-		Double = 2,
-		Quad = 3,
-		High = 4,
-		ExtraHigh = 5,
+		NONE,
+		Single,
+		Double,
+		Quad,
+		High,
+        Extended,
+		ExtraHigh,
 	}
 
 	public enum DiskEncoding

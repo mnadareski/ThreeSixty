@@ -14,17 +14,11 @@ namespace ThreeSixty
 			foreach (string arg in args)
 			{
 				if (arg == "-f" || arg == "--force")
-				{
-					force = false;
-				}
+					force = true;
 				else if (File.Exists(arg))
-				{
 					files.Add(arg);
-				}
 				else if (Directory.Exists(arg))
-				{
 					files.AddRange(Directory.EnumerateFiles(arg, "*", SearchOption.AllDirectories));
-				}
 			}
 
 			foreach (string file in files)
@@ -44,96 +38,59 @@ namespace ThreeSixty
 				return;
 			}
 
-			// Get format-specific pieces
-			long filesize = new FileInfo(path).Length;
-			string extension;
-			int trackSize;
-			int tracks;
+            // Get the full file path, in case it was not provided
+            path = Path.GetFullPath(path);
 
-			if (filesize == EightSDDS.Capacity)
-			{
-				extension = "." + EightSDSS.Capacity;
-				trackSize = EightSDDS.TrackSize;
-				tracks = EightSDSS.TracksPerSide * EightSDSS.Sides;
-			}
-			else if (filesize == EightDDDS.Capacity)
-			{
-				extension = "." + EightDDSS.Capacity;
-				trackSize = EightDDDS.TrackSize;
-				tracks = EightDDSS.TracksPerSide * EightDDSS.Sides;
-			}
-			else if (filesize == FiveTwoFiveDDDS.Capacity)
-			{
-				extension = "." + FiveTwoFiveDDSS.Capacity;
-				trackSize = FiveTwoFiveDDDS.TrackSize;
-				tracks = FiveTwoFiveDDSS.TracksPerSide * FiveTwoFiveDDSS.Sides;
-			}
-			else if (filesize == FiveTwoFiveDDDS9S.Capacity)
-			{
-				extension = "." + FiveTwoFiveDDSS9S.Capacity;
-				trackSize = FiveTwoFiveDDDS9S.TrackSize;
-				tracks = FiveTwoFiveDDSS9S.TracksPerSide * FiveTwoFiveDDSS9S.Sides;
-			}
-			else if (filesize == FiveTwoFiveQDDS.Capacity)
-			{
-				extension = "." + FiveTwoFiveQDSS.Capacity;
-				trackSize = FiveTwoFiveQDDS.TrackSize;
-				tracks = FiveTwoFiveQDSS.TracksPerSide * FiveTwoFiveQDSS.Sides;
-			}
-			else if (filesize == ThreeFiveDDDS.Capacity)
-			{
-				extension = "." + FiveTwoFiveDDDS.Capacity;
-				trackSize = ThreeFiveDDDS.TrackSize;
-				tracks = FiveTwoFiveDDDS.TracksPerSide * FiveTwoFiveDDDS.Sides;
-			}
-			else if (filesize == ThreeFiveDDDS9S.Capacity)
-			{
-				extension = "." + FiveTwoFiveDDDS9S.Capacity;
-				trackSize = ThreeFiveDDDS9S.TrackSize;
-				tracks = FiveTwoFiveDDDS9S.TracksPerSide * FiveTwoFiveDDDS9S.Sides;
-			}
-			else
+            // Get a list of all images that match the existing file size
+            long filesize = new FileInfo(path).Length;
+            var matchingImages = FloppyImage.GetMatchingImages(filesize);			
+
+            // If we got no matches, we can do nothing
+			if (matchingImages.Count == 0)
 			{
 				Console.WriteLine("File '{0}' was not a recognized file size: {1}", path, filesize);
 				return;
 			}
 
-			// Get the output path
-			path = Path.GetFullPath(path);
-			string newpath = path + extension;
+            // Loop through the returned images and create files based on those
+            foreach (var image in matchingImages)
+            {
+                string extension = $".{image.PhysicalSize}.{image.Density}.{image.Sides}sides";
+                string outpath = path + extension;
 
-			// Check to see if the image is truely the incorrect size (second track should be null)
-			using (BinaryReader br = new BinaryReader(File.OpenRead(path)))
-			{
-				br.ReadBytes(trackSize);
-				byte[] buffer = br.ReadBytes(trackSize);
+                // Check to see if the image is truely the incorrect size (second track should be null)
+                using (BinaryReader br = new BinaryReader(File.OpenRead(path)))
+                {
+                    br.ReadBytes(image.TrackSize);
+                    byte[] buffer = br.ReadBytes(image.TrackSize);
 
-				// TODO: Improve detection of corrupt, supposed-to-be-blank tracks
-				if (buffer.Any(b => b != 0x00) && !force)
-				{
-					Console.WriteLine("File '{0}' was already a valid image", path);
-					return;
-				}
-			}
-			
-			// Create the output file
-			using (BinaryReader br = new BinaryReader(File.OpenRead(path)))
-			using (BinaryWriter bw = new BinaryWriter(File.OpenWrite(newpath)))
-			{
-				bool even = true;
-				while (br.BaseStream.Position < br.BaseStream.Length)
-				{
-					byte[] buffer = br.ReadBytes(trackSize);
-					if (even)
-					{
-						bw.Write(buffer);
-					}
+                    // TODO: Improve detection of corrupt, supposed-to-be-blank tracks
+                    if (buffer.Any(b => b != 0x00) && !force)
+                    {
+                        Console.WriteLine("File '{0}' was already a valid image", path);
+                        return;
+                    }
+                }
 
-					even = !even;
-				}
-			}
+                // Create the output file
+                using (BinaryReader br = new BinaryReader(File.OpenRead(path)))
+                using (BinaryWriter bw = new BinaryWriter(File.OpenWrite(outpath)))
+                {
+                    bool even = true;
+                    while (br.BaseStream.Position < br.BaseStream.Length)
+                    {
+                        byte[] buffer = br.ReadBytes(image.TrackSize);
+                        if (even)
+                        {
+                            bw.Write(buffer);
+                        }
 
-			Console.WriteLine("File '{0}' was converted to a {1}-track image", path, tracks);
+                        even = !even;
+                    }
+                }
+
+                Console.WriteLine($"File '{path}' was converted to a {image.TracksPerSide}-track image");
+            }
 		}
 	}
 }
