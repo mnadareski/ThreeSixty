@@ -41,24 +41,41 @@ namespace ThreeSixty
             // Get the full file path, in case it was not provided
             path = Path.GetFullPath(path);
 
-            // Get a list of all images that match the existing file size
+            // Get and check the file size
             long filesize = new FileInfo(path).Length;
-            var matchingImages = FloppyImage.GetMatchingImages(filesize);			
+            if (filesize == 0)
+            {
+                Console.WriteLine($"0-byte file found, skipping: {path}");
+                return;
+            }
+
+            // Get a list of all images that match the existing file size
+            var matchingImages = FloppyImage.GetMatchingImages(filesize);
 
             // If we got no matches, we can do nothing
 			if (matchingImages.Count == 0)
 			{
-				Console.WriteLine("File '{0}' was not a recognized file size: {1}", path, filesize);
+				Console.WriteLine($"File '{path}' was not a recognized file size: {filesize}");
 				return;
 			}
 
-            // Loop through the returned images and create files based on those
-            foreach (var image in matchingImages)
-            {
-                string extension = $".{image.PhysicalSize}.{image.Density}.{image.Sides}sides";
-                string outpath = path + extension;
+            // Get a list of all images that match the half file size
+            var matchingHalfImages = FloppyImage.GetMatchingImages(filesize / 2);
 
-                // Check to see if the image is truely the incorrect size (second track should be null)
+            // If we got no matches, we probably already have a valid image
+            if (matchingHalfImages.Count == 0)
+            {
+                Console.WriteLine($"File '{path}' does not have a valid half file size: {filesize / 2}");
+                return;
+            }
+
+            // Loop through the returned images and create files based on those
+            foreach (var image in matchingHalfImages)
+            {
+                string floppyClassName = image.GetType().Name;
+                string outpath = $"{path}.{floppyClassName}";
+
+                // Check to see if the image is truly the incorrect size (second track should be null)
                 using (BinaryReader br = new BinaryReader(File.OpenRead(path)))
                 {
                     br.ReadBytes(image.TrackSize);
@@ -81,9 +98,7 @@ namespace ThreeSixty
                     {
                         byte[] buffer = br.ReadBytes(image.TrackSize);
                         if (even)
-                        {
                             bw.Write(buffer);
-                        }
 
                         even = !even;
                     }
