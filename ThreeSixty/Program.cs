@@ -5,38 +5,38 @@ using System.Linq;
 
 namespace ThreeSixty
 {
-	public class Program
-	{
-		static void Main(string[] args)
-		{
-			bool force = false;
-			List<string> files = new List<string>();
-			foreach (string arg in args)
-			{
-				if (arg == "-f" || arg == "--force")
-					force = true;
-				else if (File.Exists(arg))
-					files.Add(arg);
-				else if (Directory.Exists(arg))
-					files.AddRange(Directory.EnumerateFiles(arg, "*", SearchOption.AllDirectories));
-			}
+    public class Program
+    {
+        static void Main(string[] args)
+        {
+            bool force = false;
+            List<string> files = new List<string>();
+            foreach (string arg in args)
+            {
+                if (arg == "-f" || arg == "--force")
+                    force = true;
+                else if (File.Exists(arg))
+                    files.Add(arg);
+                else if (Directory.Exists(arg))
+                    files.AddRange(Directory.EnumerateFiles(arg, "*", SearchOption.AllDirectories));
+            }
 
-			foreach (string file in files)
-			{
-				Convert(file, force);
-			}
+            foreach (string file in files)
+            {
+                Convert(file, force);
+            }
 
-			Console.ReadLine();
-		}
+            Console.ReadLine();
+        }
 
-		private static void Convert(string path, bool force)
-		{
-			// Ensure the file exists
-			if (!File.Exists(path))
-			{
-				Console.WriteLine("File '{0}' did not exist", path);
-				return;
-			}
+        private static void Convert(string path, bool force)
+        {
+            // Ensure the file exists
+            if (!File.Exists(path))
+            {
+                Console.WriteLine("File '{0}' did not exist", path);
+                return;
+            }
 
             // Get the full file path, in case it was not provided
             path = Path.GetFullPath(path);
@@ -53,11 +53,11 @@ namespace ThreeSixty
             var matchingImages = FloppyImage.GetMatchingImages(filesize);
 
             // If we got no matches, we can do nothing
-			if (matchingImages.Count == 0)
-			{
-				Console.WriteLine($"File '{path}' was not a recognized file size: {filesize}");
-				return;
-			}
+            if (matchingImages.Count == 0)
+            {
+                Console.WriteLine($"File '{path}' was not a recognized file size: {filesize}");
+                return;
+            }
 
             // Get a list of all images that match the half file size
             var matchingHalfImages = FloppyImage.GetMatchingImages(filesize / 2);
@@ -106,6 +106,6 @@ namespace ThreeSixty
 
                 Console.WriteLine($"File '{path}' was converted to a {image.TracksPerSide}-track image");
             }
-		}
-	}
+        }
+    }
 }

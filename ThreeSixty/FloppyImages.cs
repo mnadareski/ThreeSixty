@@ -61,13 +61,6 @@ namespace ThreeSixty
         public int Capacity => BytesPerSector * SectorsPerTrack * TracksPerSide * Sides;
 
         /// <summary>
-        /// Generic constructor for a floppy image
-        /// </summary>
-        public FloppyImage()
-        {
-        }
-
-        /// <summary>
         /// Determine equality between two images
         /// </summary>
         /// <param name="other"></param>
